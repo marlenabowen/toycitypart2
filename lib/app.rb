@@ -81,37 +81,62 @@ def price_avg_method(price_total, sales_total)
 end
 
 def make_brands_section
-  $stock_brand = 0
-  $brand_price_total = 0 #initializes total price of brand's toys
-  $brand_sales = 0 #initializes brand's toy sales amount
   print_heading("Brands")
   brands
-  print_to_report "-----------------------------------------------------"
 end
 
 def brands
   unique_brands = $products_hash["items"].map { |item| item["brand"] }.uniq #iterates each toy 
   unique_brands.each_with_index do | brand, index | #iterates toy by brand 
-    print_to_report "Brand: #{brand}" #prints brand names 
+    print_brand_data(brand)
+    print_to_report "-----------------------------------------------------"
+  end
+end
+
+def print_brand_data(brand)  
+  print_to_report "Brand: #{brand}" #prints brand names 
+  brands_toys = brands_toys_method(brand)
+  toys_per_brand = toys_per_brand_method(brands_toys)
+  stock_brand_method(brands_toys)
+  avg_brand_price_method(brands_toys, toys_per_brand)
+  brand_sales_method(brands_toys)
+end
+
+def brands_toys_method(brand) #parses toys per brand 
   brands_toys = $products_hash["items"].select { |item| item["brand"] == brand }
+  return brands_toys
+end
+  
+def toys_per_brand_method(brands_toys) #total number of toys sold by this brand 
   toys_per_brand = brands_toys.length #calculates number of toys per brand (not stock amount of those toys)
+  print_to_report "Number of toys we sell from this brand: #{toys_per_brand}" #prints number of toys sold by this brand 
+  return toys_per_brand
+end
+
+def stock_brand_method(brands_toys)
   stock_brand = 0 
   brands_toys.each {|toy| stock_brand += toy["stock"].to_f} #calculates number of toys in stock 
-  print_to_report "Number of toys we sell from this brand: #{toys_per_brand}" #prints number of toys sold by this brand 
   print_to_report "Total number of toys in stock from this brand: #{stock_brand.to_i}" #prints number of toys in stock for this brand 
+  return stock_brand
+end
+  
+def avg_brand_price_method(brands_toys, toys_per_brand)
   brand_price_total = 0 #initializes total price of brand's toys 
   brands_toys.each {|toy| brand_price_total += toy["full-price"].to_f} #iterates the price of each toy 
-  avg_brand_price = 0 #initializes average price of brand's toys 
   avg_brand_price = brand_price_total / toys_per_brand #calculates average price of brand's toys 
   print_to_report "Average price of toys we sell by this brand: $#{avg_brand_price.round(2)}" #prints average price of brand's toys
+  return avg_brand_price
+end
+  
+def brand_sales_method(brands_toys)
   brand_sales = 0 #initializes brand's toy sales amount 
-    brands_toys.each do |item| #iterates each toy 
-     item ["purchases"].each do |el| #iterates each sale 
+  brands_toys.each do |item| #iterates each toy 
+     item["purchases"].each do |el| #iterates each sale 
         brand_sales += el["price"].to_f #counts total price of sales 
      end
    end
   print_to_report "Total revenue of all sales for this brand: $#{brand_sales.round(2)}" #prints total revenue
-  end
+  return brand_sales
 end
 
 def start
