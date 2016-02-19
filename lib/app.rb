@@ -27,33 +27,57 @@ def print_date
 end
 
 def make_products_section
- # $price_total = 0 #initializes a price total
-  #$price_avg = 0 #initializes a price average
-  $retail_price = 0 
   print_heading("Products")
   products
-  print_to_report "-------------------------------------"
 end
 
 def products 
   $products_hash["items"].each do |item|
-    print_to_report "Toy: #{item["title"]}" #prints the name of each toy 
-    retail_price = item["full-price"] #gets retail price for each toy 
-    print_to_report "Retail price: $#{retail_price}" #prints the full price of each toy 
-    sales_total = item["purchases"].length #calculates the total number of sales for each item 
-    print_to_report "Total number of purchases: #{sales_total}" #prints the total number of sales for each item 
-    price_total = 0 #initializes a price total 
-   # price_avg = 0 #initializes a price average 
-    item["purchases"].each do |purchase| #iterates through purchases 
-      price_total += purchase["price"].to_f #calculates total dollar amount the item sold for 
-      #  price_avg = (price_total.to_f / sales_total.to_f) #calculates average of sale price 
-    end
-    print_to_report "Total amount of sales: $#{price_total.to_s}" #prints the total dollar amount the item has sold for 
-   # print_to_report "Average sale price: $#{price_avg.to_s}" #prints the average price the item has sold for 
-   # discount = (retail_price.to_f - price_avg.to_f) #calucaltes retail price - average price paid to get discounted amount 
-   # print_to_report "Average discount: $#{discount.round(2)}" #prints average discount 
+    print_item_data(item)
     print_to_report "-------------------------------------"
   end
+end
+
+def print_item_data(item)
+  print_to_report "Toy: #{item["title"]}" #prints the name of each toy 
+  retail_price = retail_price_method(item)
+  sales_total = sales_total_method(item)
+  price_total = price_total_method(item)
+  price_avg = price_avg_method(price_total, sales_total)
+  discount_method(retail_price, price_avg)
+end
+
+def retail_price_method(item)
+  retail_price = item["full-price"] #gets retail price for each toy 
+  print_to_report "Retail price: $#{retail_price}" #prints the full price of each toy 
+  return retail_price
+end
+
+def sales_total_method(item)
+  sales_total = item["purchases"].length #calculates the total number of sales for each item 
+  print_to_report "Total number of purchases: #{sales_total}" #prints the total number of sales for each item 
+  return sales_total
+end
+
+def discount_method(retail_price, price_avg)
+  discount = (retail_price.to_f - price_avg.to_f) #calucaltes retail price - average price paid to get discounted amount 
+  print_to_report "Average discount: $#{discount.round(2)}" #prints average discount 
+  return discount 
+end
+
+def price_total_method(item)
+  price_total = 0
+  item["purchases"].each do |purchase|
+    price_total += purchase["price"].to_f
+  end
+  print_to_report "Total amount of sales: $#{price_total.to_s}" #prints the total dollar amount the item has sold for 
+  return price_total 
+end
+
+def price_avg_method(price_total, sales_total)
+  price_avg = (price_total.to_f / sales_total.to_f) #calculates average of sale price 
+  print_to_report "Average sale price: $#{price_avg.to_s}" #prints the average price the item has sold for 
+  return price_avg
 end
 
 def make_brands_section
